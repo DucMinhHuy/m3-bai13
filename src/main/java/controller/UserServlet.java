@@ -21,8 +21,8 @@ public class UserServlet extends HttpServlet {
     }
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action=request.getParameter("action");
-        String action1=request.getParameter("abc");
-        System.out.println(action1);
+//        String action1=request.getParameter("abc");
+//        System.out.println(action1);
         if(action==null){
             action="";
         }
@@ -41,7 +41,6 @@ public class UserServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request,HttpServletResponse response)
             throws ServletException,IOException{
         String action=request.getParameter("action");
-        String action1=request.getParameter("abc");
         if(action==null){
             action="";
         }
@@ -54,12 +53,20 @@ public class UserServlet extends HttpServlet {
                     break;
                 case "delete":
                     break;
+                case "permision":
+                    addUserPermision(request,response);
+                    break;
                 default:
                     break;
             }
         }catch (SQLException ex){
             throw new ServletException(ex);
         }
+    }
+    private void addUserPermision(HttpServletRequest request,HttpServletResponse response){
+        User user=new User("huy","huy@gmail.com","thaibinh");
+        int[] permision={1,2,4};
+        userDAO.addUserTransaction(user,permision);
     }
     private void showEditFrom(HttpServletRequest request,HttpServletResponse response) throws SQLException ,ServletException,IOException{
         int id=Integer.parseInt(request.getParameter("id"));

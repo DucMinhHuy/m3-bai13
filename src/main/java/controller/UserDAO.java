@@ -14,6 +14,8 @@ public class UserDAO implements IUserDAO {
     private static final String SELECT_ALL_USERS="SELECT * FROM users";
     private static final String DELETE_USERS_SQL="DELETE FROM users WHERE id=?";
     private static final String UPDATE_USERS_SQL="UPDATE users SET name=?,email=?,country=? WHERE id=?";
+//    private static final String SQL_INSERT="INSERT INTO "
+//    private static final String SQL_UPDATE="UPDATE EMPLOYEE SET"
     public UserDAO() {}
     protected java.sql.Connection getConnection(){
         java.sql.Connection connection=null;
@@ -61,6 +63,63 @@ public class UserDAO implements IUserDAO {
             printSQLException(e);
         }
     }
+
+    @Override
+    public void addUserTransaction(User user, int[] permision) {
+        Connection coon=null;
+        PreparedStatement pstmt=null;
+        PreparedStatement pstmtAssignment=null;
+        ResultSet rs=null;
+        try{
+            coon=getConnection();
+            coon.setAutoCommit(false);
+            pstmt=coon.prepareStatement(INSERT_USERS_SQL,Statement.RETURN_GENERATED_KEYS);
+            pstmt.setString(1,user.getName());
+            pstmt.setString(2,user.getEmail());
+            pstmt.setString(3,user.getCountry());
+            int rowAffected=pstmt.executeUpdate();
+            rs =pstmt.getGeneratedKeys();
+            int userId=0;
+            if(rs.next())
+                userId=rs.getInt(1);
+            if(rowAffected==1){
+                String sqlPivot="INSERT INTO User_permision(user_id,permision_id)"+"VALUE(?,?)";
+                pstmtAssignment= coon.prepareStatement(sqlPivot);
+                for (int permisionId:permision) {
+                    pstmtAssignment.setInt(1,userId);
+                    pstmtAssignment.setInt(2,permisionId);
+                    pstmtAssignment.executeUpdate();
+                }
+                coon.commit();
+            }else {
+                coon.rollback();
+            }
+        } catch (SQLException ex){
+           try{
+               if(coon!=null)
+               coon.rollback();
+           }catch (SQLException e){
+               System.out.println(e.getMessage());
+           }
+            System.out.println(ex.getMessage());
+        }
+        finally {
+            try{
+                if(rs!=null)rs.close();
+                if(pstmt!=null)pstmt.close();
+                if(pstmtAssignment!=null)pstmtAssignment.close();
+                if(coon!=null)coon.close();
+            }catch (SQLException e){
+                System.out.println(e.getMessage());
+            }
+        }
+    }
+
+//    @Override
+//    public void insertUpdateWithoutTransaction() {
+//
+//    }
+
     private void printSQLException(SQLException ex){
         for (Throwable e:ex){
             if(e instanceof SQLException){

@@ -15,4 +15,6 @@ public interface IUserDAO {
 //    boolean updateUser(User user)throws SQLException;
     User geUserById(int id);
     void insertUserStore(User user)throws SQLException;
+//    void insertUpdateWithoutTransaction();
+    void addUserTransaction(User user,int[] permision);
 }

@@ -6,6 +6,7 @@ import sevier.IUserDAO;
 import java.sql.*;
 
 public class UserDAO implements IUserDAO {
+    private static final String SQl_INSERT="INSERT INTO EMPLOYEE (NAME, SALARY, CREATED_DATE) VALUES (?,?,?)";
     private String jdbcURl="jdbc:mysql://localhost:3306/thuchanhbai12?useSSL=false";
     private String jdbcUsername="root";
     private String jdbcPassword="Ducminhhuy";
@@ -113,6 +114,11 @@ public class UserDAO implements IUserDAO {
                 System.out.println(e.getMessage());
             }
         }
+    }
+
+    @Override
+    public void insertUpdateWithoutTransaction() {
+
     }
 
 //    @Override
